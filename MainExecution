@@ -1,3 +1,4 @@
 loadstring(game:HttpGet('https://raw.githubusercontent.com/mrcoolman69420/number1/main/FirstExecution'))()
 task.wait(1)
 loadstring(game:HttpGet('https://raw.githubusercontent.com/mrcoolman69420/number1/main/SecondExecution'))()
+--Look at the left side of your screen now!
