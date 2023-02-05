@@ -1,0 +1,396 @@
+-- Decompiled with the Synapse X Luau decompiler.
+
+local l__ReplicatedStorage__1 = game:GetService("ReplicatedStorage");
+local u1 = require(l__ReplicatedStorage__1.Packages.Fusion);
+local u2 = require(l__ReplicatedStorage__1.Admin.AdminPanel.InlineButton);
+local u3 = require(l__ReplicatedStorage__1.Admin.Theme);
+local u4 = require(l__ReplicatedStorage__1.FeaturePlaces);
+local u5 = require(l__ReplicatedStorage__1.Packages.Promise);
+local u6 = require(l__ReplicatedStorage__1.Admin.AdminPanel.InlineTextBox);
+local u7 = require(l__ReplicatedStorage__1.Admin.AdminPanel.PlayerGridItem);
+local l__Players__8 = game:GetService("Players");
+local l__UserService__9 = game:GetService("UserService");
+local u10 = require(l__ReplicatedStorage__1.Admin.AdminPanel.InlineUser);
+local function u11(p1)
+	local v2 = u1.State("None");
+	local v3 = {
+		Name = "BanButton", 
+		GuiButtonState = v2
+	};
+	v3.Color = u1.Computed(function()
+		if v2:get() == "Pressing" then
+			return u3.BanButtonPressing;
+		end;
+		if v2:get() == "Hovering" then
+			return u3.BanButtonHovering;
+		end;
+		return u3.BanButtonBackground;
+	end);
+	v3.Text = "Ban";
+	v3.Visible = p1.Visible;
+	v3.OnActivated = p1.OnActivated;
+	return u2(v3);
+end;
+local function u12(p2)
+	local v4 = u1.State("None");
+	local v5 = {
+		Name = "UnbanButton", 
+		GuiButtonState = v4
+	};
+	v5.Color = u1.Computed(function()
+		if v4:get() == "Pressing" then
+			return u3.UnbanButtonPressing;
+		end;
+		if v4:get() == "Hovering" then
+			return u3.UnbanButtonHovering;
+		end;
+		return u3.UnbanButtonBackground;
+	end);
+	v5.Text = "Unban";
+	v5.Visible = p2.Visible;
+	v5.OnActivated = p2.OnActivated;
+	return u2(v5);
+end;
+local function u13(p3)
+	local v6 = u1.State("None");
+	local v7 = {
+		Name = "KickButton", 
+		GuiButtonState = v6
+	};
+	v7.Color = u1.Computed(function()
+		if v6:get() == "Pressing" then
+			return u3.KickButtonPressing;
+		end;
+		if v6:get() == "Hovering" then
+			return u3.KickButtonHovering;
+		end;
+		return u3.KickButtonBackground;
+	end);
+	v7.Text = "Kick From Server";
+	v7.Visible = p3.Visible;
+	v7.OnActivated = p3.OnActivated;
+	return u2(v7);
+end;
+local function u14(p4)
+	local v8 = u1.State("None");
+	local v9 = {
+		Name = "ViewBoothButton", 
+		GuiButtonState = v8
+	};
+	v9.Color = u1.Computed(function()
+		if v8:get() == "Pressing" then
+			return u3.ViewBoothButtonPressing;
+		end;
+		if v8:get() == "Hovering" then
+			return u3.ViewBoothButtonHovering;
+		end;
+		return u3.ViewBoothButtonBackground;
+	end);
+	v9.Text = "View Booth";
+	v9.Visible = p4.Visible;
+	v9.OnActivated = p4.OnActivated;
+	return u2(v9);
+end;
+local function u15(p5)
+	local v10 = u1.State("None");
+	local v11 = "Join Server";
+	if p5.placeId == u4.LegacyMapPlaceId then
+		v11 = "Join Legacy Server";
+	elseif p5.placeId == u4.VoiceChatOnlyPlaceId then
+		v11 = "Join Voice Server";
+	end;
+	local v12 = {
+		Name = "JoinServerButton", 
+		GuiButtonState = v10
+	};
+	v12.Color = u1.Computed(function()
+		if v10:get() == "Pressing" then
+			return u3.JoinServerButtonPressing;
+		end;
+		if v10:get() == "Hovering" then
+			return u3.JoinServerButtonHovering;
+		end;
+		return u3.JoinServerButtonBackground;
+	end);
+	v12.Text = v11;
+	v12.Visible = p5.Visible;
+	v12.OnActivated = p5.OnActivated;
+	return u2(v12);
+end;
+return function(p6)
+	local u16 = u1.State(nil);
+	local v13 = u1.Computed(function()
+		return u16:get() ~= nil;
+	end);
+	local u17 = u1.State(nil);
+	local v14 = u1.Computed(function()
+		if not u16:get() or not u17:get() then
+			return false;
+		end;
+		return not u17:get().InServer;
+	end);
+	local v15 = u1.Computed(function()
+		if not u16:get() then
+			return false;
+		end;
+		return not u16:get().isBanned;
+	end);
+	local u18 = u5.resolve();
+	local u19 = u1.State({
+		inGame = false
+	});
+	local v16 = {
+		Name = "BanReason"
+	};
+	local u20 = u1.State(false);
+	v16.PlaceholderText = u1.Computed(function()
+		if u20:get() then
+			return "Ban Reason (required)";
+		end;
+		return "Ban Reason";
+	end);
+	v16.Red = false;
+	v16.Visible = v13;
+	v16.TextEditable = v15;
+	v16.HighlightEmptyError = u20;
+	v16.Text = u1.Computed(function()
+		if not u16:get() or not u16:get().isBanned then
+			return "";
+		end;
+		return u16:get().reason and "";
+	end);
+	local u21 = "";
+	function v16.TextChanged(p7)
+		u21 = p7;
+	end;
+	local v17 = u6(v16);
+	local v18 = {
+		Name = "AdminPanel", 
+		AnchorPoint = Vector2.new(0.5, 0.5), 
+		Position = UDim2.fromScale(0.5, 0.45), 
+		Size = UDim2.new(0.95, 0, 0, 350), 
+		BackgroundColor3 = u3.Background, 
+		Visible = p6.Visible
+	};
+	local v19 = {};
+	local v20 = {
+		Name = "Players", 
+		ScrollingDirection = Enum.ScrollingDirection.Y, 
+		AutomaticCanvasSize = Enum.AutomaticSize.Y, 
+		ScrollBarThickness = u3.ScrollBarThickness, 
+		ScrollBarImageColor3 = u3.ScrollBar, 
+		CanvasSize = UDim2.new(), 
+		BackgroundTransparency = 1
+	};
+	local u22 = u1.State(0);
+	v20.Size = u1.Computed(function()
+		return UDim2.new(1, -1, 1, -u22:get() - 12);
+	end);
+	v20[u1.Children] = { u1.New("UIGridLayout")({
+			CellSize = UDim2.new(0.5, -8, 0, 50), 
+			CellPadding = UDim2.fromOffset(15, 15), 
+			SortOrder = Enum.SortOrder.Name
+		}), u1.New("UIPadding")({
+			PaddingLeft = UDim.new(0, 24), 
+			PaddingRight = UDim.new(0, 24)
+		}), u1.ComputedPairs(p6.Players, function(p8, p9)
+			local v21 = {
+				UserId = p9.UserId, 
+				DisplayName = p9.DisplayName, 
+				Username = p9.Name
+			};
+			v21.IsSelected = u1.Computed(function()
+				if u17:get() == nil then
+					return;
+				end;
+				return u17:get().Id == p9.UserId;
+			end);
+			function v21.OnActivated()
+				u17:set({
+					DisplayName = p9.DisplayName, 
+					Username = p9.Name, 
+					Id = p9.UserId, 
+					InServer = true
+				});
+				u16:set({
+					banReason = "", 
+					isBanned = false
+				});
+			end;
+			return u7(v21);
+		end) };
+	local v22 = {
+		Name = "Bottom", 
+		AutomaticSize = Enum.AutomaticSize.Y, 
+		AnchorPoint = Vector2.new(0, 1), 
+		Position = UDim2.fromScale(0, 1), 
+		Size = UDim2.fromScale(1, 0), 
+		BackgroundColor3 = u3.Background, 
+		[u1.OnChange("AbsoluteSize")] = function(p10)
+			u22:set(p10.Y);
+		end
+	};
+	local v23 = {};
+	local v24 = {
+		Name = "UserSearch", 
+		PlaceholderText = "Search Roblox Users"
+	};
+	local function u23()
+		u18:cancel();
+		u16:set(nil);
+		u19:set({
+			inGame = false
+		});
+		if u17:get() then
+			local u24 = u17:get();
+			u18 = u5.delay(0):andThenCall(p6.LoadBanStatus, u24.Id):andThen(function(p11)
+				u16:set(p11);
+			end):andThenReturn((u5.try(function()
+				if u24.InServer then
+					return {
+						inGame = false
+					};
+				end;
+				return p6.CheckUserInGame(u24.Id);
+			end))):andThen(function(p12)
+				if p12.inGame then
+					u19:set(p12);
+				end;
+			end);
+		end;
+	end;
+	function v24.OnTextEntered(p13)
+		local v25 = l__Players__8:GetUserIdFromNameAsync(p13);
+		local v26 = nil;
+		if tonumber(p13) ~= nil then
+			local u25 = v26;
+			pcall(function()
+				u25 = l__UserService__9:GetUserInfosByUserIdsAsync({ tonumber(p13) })[1];
+			end);
+		end;
+		if v26 == nil then
+			v26 = l__UserService__9:GetUserInfosByUserIdsAsync({ (l__Players__8:GetUserIdFromNameAsync(p13)) })[1];
+		end;
+		if v26 then
+			v26.InServer = l__Players__8:GetPlayerByUserId(v26.Id) ~= nil;
+			u17:set(v26);
+			u23();
+		end;
+	end;
+	v24.Visible = u1.Computed(function()
+		return u17:get() == nil;
+	end);
+	local v27 = {
+		Visible = v15
+	};
+	function v27.OnActivated()
+		if u21 == "" then
+			v17:CaptureFocus();
+			u20:set(true);
+			return;
+		end;
+		if u21 == "" then
+			local v28 = nil;
+		else
+			v28 = u21;
+		end;
+		p6.BanUser(u17:get().Id, v28);
+		u16:set({
+			banReason = u21, 
+			isBanned = true
+		});
+	end;
+	v23[1] = u1.New("UICorner")({
+		CornerRadius = UDim.new(0, 10)
+	});
+	v23[2] = u1.New("UIListLayout")({
+		SortOrder = Enum.SortOrder.LayoutOrder, 
+		Padding = UDim.new(0, 6)
+	});
+	v23[3] = u1.New("UIPadding")({
+		PaddingBottom = UDim.new(0, 20), 
+		PaddingLeft = UDim.new(0, 24), 
+		PaddingRight = UDim.new(0, 24)
+	});
+	v23[4] = u6(v24);
+	v23[5] = u1.Computed(function()
+		if not u17:get() then
+			return;
+		end;
+		return u10({
+			DisplayName = u17:get().DisplayName, 
+			Username = u17:get().Username, 
+			UserId = u17:get().Id, 
+			OnActivated = function()
+				u17:set(nil);
+				u16:set(nil);
+				u20:set(false);
+				u19:set({
+					inGame = false
+				});
+				u18:cancel();
+			end, 
+			Visible = u1.Computed(function()
+				return u17:get() ~= nil;
+			end)
+		});
+	end);
+	v23[6] = v17;
+	v23[7] = u11(v27);
+	v23[8] = u12({
+		Visible = u1.Computed(function()
+			if not u16:get() then
+				return false;
+			end;
+			return u16:get().isBanned;
+		end), 
+		OnActivated = function()
+			p6.UnbanUser(u17:get().Id);
+			u16:set({
+				isBanned = false
+			});
+		end
+	});
+	v23[9] = u13({
+		Visible = u1.Computed(function()
+			if not u16:get() or not u17:get() then
+				return false;
+			end;
+			return u17:get().InServer;
+		end), 
+		OnActivated = function()
+			p6.KickUser(u17:get().Id);
+		end
+	});
+	v23[10] = u14({
+		Visible = v13, 
+		OnActivated = function()
+			p6.ViewBooth(u17:get());
+		end
+	});
+	v23[11] = u15({
+		Visible = u1.Computed(function()
+			return u19:get().inGame;
+		end), 
+		PlaceId = u1.Computed(function()
+			return u19:get().placeId;
+		end), 
+		OnActivated = function()
+			p6.JoinUserServer(u17:get().Id);
+		end
+	});
+	v22[u1.Children] = v23;
+	v19[1] = u1.New("UICorner")({
+		CornerRadius = UDim.new(0, 10)
+	});
+	v19[2] = u1.New("UIPadding")({
+		PaddingTop = UDim.new(0, 20)
+	});
+	v19[3] = u1.New("UISizeConstraint")({
+		MaxSize = Vector2.new(450, math.huge)
+	});
+	v19[4] = u1.New("ScrollingFrame")(v20);
+	v19[5] = u1.New("Frame")(v22);
+	v18[u1.Children] = v19;
+	return u1.New("Frame")(v18);
+end;
